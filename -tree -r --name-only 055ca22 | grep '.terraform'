@@ -1,0 +1,11 @@
+[33mcommit 50496c44d96ba01387a77d517fcddce9604568fa[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mdev[m[33m)[m
+Author: rubencruzh@gmail.com <rubencruzh@gmail.com>
+Date:   Wed Aug 19 17:41:32 2026 +0000
+
+    chore: ignore Terraform generated files
+
+[33mcommit 055ca22890afac25829887ac32a6828158a34fbc[m
+Author: rubencruzh@gmail.com <rubencruzh@gmail.com>
+Date:   Wed Aug 19 17:23:18 2026 +0000
+
+    first commit
