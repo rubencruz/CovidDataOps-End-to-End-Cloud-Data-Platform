@@ -1,4 +1,4 @@
-project_id  = "gcp-project-505919"
+project_id  = "gcp-project-506020"
 location    = "US"
 environment = "dev"
-bucket_name = "backet_covid"
+bucket_name = "backet_covid_gcp"
