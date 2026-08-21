@@ -1,5 +1,5 @@
 resource "google_bigquery_dataset" "covid_raw" {
-  dataset_id = "covid_raw"
+  dataset_id = var.dataset_id
   location   = var.location
 
   description = "Raw COVID-19 data received from the source system"

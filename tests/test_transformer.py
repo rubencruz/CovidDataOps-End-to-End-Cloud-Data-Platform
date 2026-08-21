@@ -1,5 +1,5 @@
 import pandas as pd
-from ingestion.transformer import transform
+from CovidDataOps.src.ingestion.transformer import transform
 
 def test_transform_converts_types_and_empty_values():
     df = pd.DataFrame([{

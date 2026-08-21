@@ -14,14 +14,13 @@ import argparse
 import logging
 from pathlib import Path
 
-from ingestion.config import BQ_DATASET, BQ_TABLE, BUCKET_NAME, PROJECT_ID
-from ingestion.loader import add_ingestion_metadata, load_to_bigquery
-from ingestion.reader import read_csv
-from ingestion.transformer import transform
-from ingestion.validator import validate
+from covid_pipeline.ingestion.config import BQ_DATASET, BQ_TABLE, BUCKET_NAME, PROJECT_ID
+from covid_pipeline.ingestion.loader import add_ingestion_metadata, load_to_bigquery
+from covid_pipeline.ingestion.reader import read_csv
+from covid_pipeline.ingestion.transformer import transform
+from covid_pipeline.ingestion.validator import validate
 
 LOGGER = logging.getLogger("phase2")
-
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
@@ -59,10 +58,10 @@ def build_parser() -> argparse.ArgumentParser:
     )
     return parser
 
-
 def run(
     source: str,
-    bucket: str | None = None,
+    #bucket: str | None = None,
+    bucket: str = BUCKET_NAME,
     project: str | None = None,
     dataset: str = BQ_DATASET,
     table: str = BQ_TABLE,
@@ -125,7 +124,6 @@ def main() -> None:
     except Exception:
         LOGGER.exception("Phase 2 ingestion failed")
         raise SystemExit(1)
-
 
 if __name__ == "__main__":
     main()

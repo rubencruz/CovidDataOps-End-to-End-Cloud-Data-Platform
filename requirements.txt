@@ -1,0 +1,8 @@
+pandas>=2.2,<3
+flask>=3.0,<4
+gunicorn>=22,<24
+pyarrow==21.0.0
+google-cloud-storage>=2.18,<4
+google-cloud-bigquery>=3.25,<4
+google-cloud-bigquery-storage>=2.27,<3
+pytest>=8,<9

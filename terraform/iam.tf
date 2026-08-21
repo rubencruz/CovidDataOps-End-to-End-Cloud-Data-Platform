@@ -23,3 +23,17 @@ resource "google_project_iam_member" "processor_bigquery_job_user" {
 
   member = "serviceAccount:${google_service_account.covid_processor.email}"
 }
+
+resource "google_bigquery_dataset_iam_member" "cloud_run_bigquery_editor" {
+  project    = var.project_id
+  dataset_id = google_bigquery_dataset.covid_raw.dataset_id
+  role       = "roles/bigquery.dataEditor"
+  member     = "serviceAccount:${google_service_account.covid_processor.email}"
+}
+
+# Ativa a API do Cloud Run automaticamente
+resource "google_project_service" "cloud_run_api" {
+  project            = var.project_id
+  service            = "run.googleapis.com"
+  disable_on_destroy = false
+}
