@@ -1,5 +1,5 @@
 import pandas as pd
-from CovidDataOps.src.ingestion.reader import read_local_csv
+from covid_pipeline.ingestion.reader import read_local_csv
 
 def test_read_local_csv(tmp_path):
     csv_file = tmp_path / "covid.csv"

@@ -32,3 +32,33 @@ output "covid_analytics_dataset" {
   description = "Analytics BigQuery dataset"
   value       = google_bigquery_dataset.covid_analytics.dataset_id
 }
+output "pubsub_topic" {
+  description = "Pub/Sub topic receiving Cloud Storage object-finalized notifications"
+  value       = google_pubsub_topic.covid_gcs_events.name
+}
+
+output "eventarc_trigger" {
+  description = "Eventarc trigger forwarding Pub/Sub events to Cloud Run"
+  value       = google_eventarc_trigger.covid_gcs_pubsub.name
+}
+
+
+output "cloud_run_url" {
+  description = "Cloud Run service URL used by scheduled jobs."
+  value       = google_cloud_run_v2_service.covid_pipeline.uri
+}
+
+output "scheduler_service_account" {
+  description = "Service account used by Cloud Scheduler."
+  value       = var.enable_scheduler ? google_service_account.scheduler[0].email : null
+}
+
+output "quality_check_schedule" {
+  description = "Configured Cloud Scheduler schedule for data quality."
+  value       = var.enable_scheduler ? google_cloud_scheduler_job.quality_check[0].schedule : null
+}
+
+output "reconciliation_schedule" {
+  description = "Configured Cloud Scheduler schedule for reconciliation."
+  value       = var.enable_scheduler ? google_cloud_scheduler_job.reconciliation[0].schedule : null
+}

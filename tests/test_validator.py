@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
-from CovidDataOps.src.ingestion.config import EXPECTED_COLUMNS
-from CovidDataOps.src.ingestion.validator import ValidationError, validate
+from covid_pipeline.ingestion.config import EXPECTED_COLUMNS
+from covid_pipeline.ingestion.validator import ValidationError, validate
 
 def valid_dataframe():
     return pd.DataFrame([{

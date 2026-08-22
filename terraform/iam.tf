@@ -37,3 +37,19 @@ resource "google_project_service" "cloud_run_api" {
   service            = "run.googleapis.com"
   disable_on_destroy = false
 }
+
+# Phase 5: Cloud Scheduler invokes the authenticated Cloud Run jobs.
+resource "google_service_account" "scheduler" {
+  count        = var.enable_scheduler ? 1 : 0
+  account_id   = "covid-scheduler"
+  display_name = "COVID Cloud Scheduler"
+  description  = "Identity used by Cloud Scheduler to invoke scheduled Cloud Run jobs"
+}
+
+resource "google_cloud_run_v2_service_iam_member" "scheduler_invoker" {
+  count    = var.enable_scheduler ? 1 : 0
+  name     = google_cloud_run_v2_service.covid_pipeline.name
+  location = google_cloud_run_v2_service.covid_pipeline.location
+  role     = "roles/run.invoker"
+  member   = "serviceAccount:${google_service_account.scheduler[0].email}"
+}

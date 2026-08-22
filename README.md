@@ -171,3 +171,65 @@ GCS → Pub/Sub → Eventarc → Cloud Run → BigQuery
 ### Event endpoint
 
 `POST /events/pubsub` is intended for Eventarc. `/ingest` remains available for the explicit Phase 3 invocation model.
+
+## Phase 5 — Cloud Scheduler / Data Quality
+
+Phase 5 adds two scheduled operational jobs to the existing Cloud Run service. The ingestion and event-driven paths from Phases 2–4 remain unchanged.
+
+```text
+Cloud Scheduler
+       |
+       +----> POST /jobs/quality-check ----> BigQuery
+       |
+       +----> POST /jobs/reconciliation ---> BigQuery
+```
+
+### Scheduled endpoints
+
+- `POST /jobs/quality-check` — validates row presence, required fields, negative metrics and ingestion lineage.
+- `POST /jobs/reconciliation` — checks source-file lineage, latest data/ingestion dates and duplicate business keys.
+
+Both endpoints return HTTP 500 on a failed check so Cloud Scheduler can retry according to the Terraform retry policy.
+
+### Deploy Phase 5
+
+Build and push the Phase 5 image:
+
+```bash
+gcloud builds submit \\
+  --tag REGION-docker.pkg.dev/YOUR_PROJECT/covid-data/covid-pipeline:phase-5 .
+```
+
+Then apply Terraform:
+
+```bash
+cd terraform
+terraform init
+terraform apply \\
+  -var="project_id=YOUR_PROJECT" \\
+  -var="location=us-central1" \\
+  -var="container_image=REGION-docker.pkg.dev/YOUR_PROJECT/covid-data/covid-pipeline:phase-5"
+```
+
+The default schedules are:
+
+```text
+quality check:  0 6 * * *
+reconciliation: 30 6 * * *
+time zone:      America/Sao_Paulo
+```
+
+They can be overridden with `quality_check_schedule`, `reconciliation_schedule` and `scheduler_time_zone`. Set `enable_scheduler=false` to disable creation of the Phase 5 Scheduler resources.
+
+### Verify Scheduler
+
+```bash
+gcloud scheduler jobs list --location=us-central1
+```
+
+Manual execution can be triggered with:
+
+```bash
+gcloud scheduler jobs run covid-quality-check --location=us-central1
+gcloud scheduler jobs run covid-reconciliation --location=us-central1
+```
