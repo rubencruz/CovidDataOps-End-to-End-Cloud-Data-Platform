@@ -113,3 +113,61 @@ pytest -q
 ```
 
 The integration test requires real GCP credentials and is skipped unless `RUN_GCP_INTEGRATION=1` is set.
+
+## Phase 4 — Pub/Sub / Event-Driven Ingestion
+
+Phase 4 adds automatic processing of files finalized in Cloud Storage:
+
+```text
+GCS
+ ↓ OBJECT_FINALIZE
+Pub/Sub
+ ↓
+Eventarc
+ ↓
+Cloud Run /events/pubsub
+ ↓
+Existing Python ingestion pipeline
+ ↓
+BigQuery
+```
+
+No copy of the ingestion pipeline is created. The new `events/pubsub_handler.py` only adapts the event payload to the existing `covid_pipeline.main.run()` function.
+
+### Deploy Phase 4
+
+Build and push a new image because the Phase 4 event handler is part of the application:
+
+```bash
+gcloud builds submit \
+  --tag REGION-docker.pkg.dev/YOUR_PROJECT/covid-data/covid-pipeline:phase-4 .
+```
+
+Then:
+
+```bash
+cd terraform
+terraform init
+terraform apply \
+  -var="project_id=YOUR_PROJECT" \
+  -var="location=us-central1" \
+  -var="container_image=REGION-docker.pkg.dev/YOUR_PROJECT/covid-data/covid-pipeline:phase-4"
+```
+
+Terraform creates the Pub/Sub topic, configures Cloud Storage `OBJECT_FINALIZE` notifications, creates the Eventarc trigger, and grants the Eventarc identity permission to invoke Cloud Run.
+
+### Test the event-driven flow
+
+```bash
+gsutil cp data/sample/covid_sample.csv gs://YOUR_BUCKET/sample/covid_sample.csv
+```
+
+The upload should automatically result in:
+
+```text
+GCS → Pub/Sub → Eventarc → Cloud Run → BigQuery
+```
+
+### Event endpoint
+
+`POST /events/pubsub` is intended for Eventarc. `/ingest` remains available for the explicit Phase 3 invocation model.
