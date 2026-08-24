@@ -8,9 +8,7 @@ resource "google_service_account" "covid_processor" {
 
 resource "google_storage_bucket_iam_member" "processor_storage_reader" {
   bucket = google_storage_bucket.covid.name
-
-  role = "roles/storage.objectViewer"
-
+  role   = "roles/storage.objectViewer"
   member = "serviceAccount:${google_service_account.covid_processor.email}"
 }
 
@@ -18,13 +16,19 @@ resource "google_storage_bucket_iam_member" "processor_storage_reader" {
 
 resource "google_project_iam_member" "processor_bigquery_job_user" {
   project = var.project_id
-
-  role = "roles/bigquery.jobUser"
-
-  member = "serviceAccount:${google_service_account.covid_processor.email}"
+  role    = "roles/bigquery.jobUser"
+  member  = "serviceAccount:${google_service_account.covid_processor.email}"
 }
 
-resource "google_bigquery_dataset_iam_member" "cloud_run_bigquery_editor" {
+resource "google_bigquery_table_iam_member" "processor_table_editor" {
+  project    = var.project_id
+  dataset_id = google_bigquery_dataset.covid_raw.dataset_id
+  table_id   = google_bigquery_table.covid_brazil.table_id
+  role       = "roles/bigquery.dataEditor"
+  member     = "serviceAccount:${google_service_account.covid_processor.email}"
+}
+
+resource "google_bigquery_dataset_iam_member" "processor_dataset_editor" {
   project    = var.project_id
   dataset_id = google_bigquery_dataset.covid_raw.dataset_id
   role       = "roles/bigquery.dataEditor"

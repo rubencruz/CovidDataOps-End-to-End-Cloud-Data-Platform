@@ -2,7 +2,7 @@
 set -euo pipefail
 : "${PROJECT_ID:?Set PROJECT_ID}"
 : "${REGION:=us-central1}"
-IMAGE="${REGION}-docker.pkg.dev/${PROJECT_ID}/covid-data/covid-pipeline:phase-4"
+IMAGE="${REGION}-docker.pkg.dev/${PROJECT_ID}/covid-data/covid-pipeline:phase-6"
 
 gcloud artifacts repositories describe covid-data --location="$REGION" >/dev/null 2>&1 || \
   gcloud artifacts repositories create covid-data --repository-format=docker --location="$REGION"
@@ -13,5 +13,5 @@ cd terraform
 terraform init
 terraform apply -auto-approve \
   -var="project_id=$PROJECT_ID" \
-  -var="region=$REGION" \
+  -var="location=$REGION" \
   -var="container_image=$IMAGE"

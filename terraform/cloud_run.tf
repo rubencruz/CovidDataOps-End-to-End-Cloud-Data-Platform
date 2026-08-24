@@ -3,8 +3,11 @@ resource "google_cloud_run_v2_service" "covid_pipeline" {
   location = var.location
   ingress  = "INGRESS_TRAFFIC_ALL"
 
+  deletion_protection = true
+
   template {
-    service_account = google_service_account.covid_processor.email
+    service_account       = google_service_account.covid_processor.email
+    execution_environment = "EXECUTION_ENVIRONMENT_GEN2"
 
     scaling {
       min_instance_count = var.min_instances

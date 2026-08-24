@@ -62,3 +62,13 @@ output "reconciliation_schedule" {
   description = "Configured Cloud Scheduler schedule for reconciliation."
   value       = var.enable_scheduler ? google_cloud_scheduler_job.reconciliation[0].schedule : null
 }
+
+output "runtime_secret_name" {
+  description = "Secret Manager runtime secret container created by Phase 6."
+  value       = var.enable_secrets ? google_secret_manager_secret.pipeline_runtime[0].secret_id : null
+}
+
+output "security_ingress" {
+  description = "Cloud Run ingress mode; authentication remains required by IAM."
+  value       = google_cloud_run_v2_service.covid_pipeline.ingress
+}

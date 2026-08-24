@@ -20,48 +20,48 @@ variable "bucket_name" {
   type        = string
   default     = "backet_covid_gcp"
 }
-variable "dataset_id" { 
+variable "dataset_id" {
+  type    = string
+  default = "covid_raw"
+}
+variable "table_id" {
+  type    = string
+  default = "covid_brazil"
+}
+variable "container_image" {
   type = string
-  default = "covid_raw" 
 }
-variable "table_id" { 
-  type = string 
-  default = "covid_brazil" 
+variable "cloud_run_service_name" {
+  type    = string
+  default = "covid-pipeline"
 }
-variable "container_image" { 
-  type = string
+variable "service_account_id" {
+  type    = string
+  default = "covid-pipeline"
 }
-variable "cloud_run_service_name" { 
-  type = string 
-  default = "covid-pipeline" 
+variable "memory" {
+  type    = string
+  default = "1Gi"
 }
-variable "service_account_id" { 
-  type = string 
-  default = "covid-pipeline" 
+variable "cpu" {
+  type    = string
+  default = "1"
 }
-variable "memory" { 
-  type = string 
-  default = "1Gi" 
+variable "min_instances" {
+  type    = number
+  default = 0
 }
-variable "cpu" { 
-  type = string 
-  default = "1" 
+variable "max_instances" {
+  type    = number
+  default = 3
 }
-variable "min_instances" { 
-  type = number 
-  default = 0 
+variable "allow_unauthenticated" {
+  type    = bool
+  default = false
 }
-variable "max_instances" { 
-  type = number 
-  default = 3 
-}
-variable "allow_unauthenticated" { 
-  type = bool 
-  default = false 
-}
-variable "enable_pubsub" { 
-  type = bool 
-  default = false 
+variable "enable_pubsub" {
+  type    = bool
+  default = false
 }
 variable "enable_scheduler" {
   description = "Create the Phase 5 Cloud Scheduler jobs."
@@ -72,13 +72,13 @@ variable "enable_scheduler" {
 variable "quality_check_schedule" {
   description = "Cron schedule for the BigQuery data-quality check."
   type        = string
-  default     = "55 14 * * *"
+  default     = "46 15 * * *"
 }
 
 variable "reconciliation_schedule" {
   description = "Cron schedule for the reconciliation job."
   type        = string
-  default     = "55 14 * * *"
+  default     = "46 15 * * *"
 }
 
 variable "scheduler_time_zone" {
@@ -86,7 +86,14 @@ variable "scheduler_time_zone" {
   type        = string
   default     = "America/Sao_Paulo"
 }
-variable "enable_secrets" { 
-  type = bool 
-  default = false 
+variable "enable_secrets" {
+  description = "Provision the Phase 6 Secret Manager runtime secret."
+  type        = bool
+  default     = true
+}
+
+variable "secret_name" {
+  description = "Secret Manager secret container for future runtime credentials."
+  type        = string
+  default     = "covid-pipeline-runtime"
 }

@@ -106,6 +106,45 @@ curl "$SERVICE_URL/health"
 - **Phase 6:** harden secrets, IAM and service identities.
 - **Phase 7:** production concerns such as monitoring, retries, observability and operational controls.
 
+## Phase 6 — Security Hardening
+
+Phase 6 keeps the Phase 3/4/5 architecture intact while hardening the runtime:
+
+- Secret Manager API and a versionless `covid-pipeline-runtime` secret container; no plaintext secret is stored in Terraform.
+- Cloud Storage Public Access Prevention and object versioning.
+- BigQuery write access reduced from the raw dataset to the `covid_brazil` table.
+- Dedicated Cloud Run, Eventarc and Scheduler identities remain separated by responsibility.
+- Cloud Run remains authenticated (`allow_unauthenticated=false`).
+- Cloud Run is explicitly configured for the Gen2 execution environment.
+
+Build and push the Phase 6 image:
+
+```bash
+gcloud builds submit \
+  --tag REGION-docker.pkg.dev/YOUR_PROJECT/covid-data/covid-pipeline:phase-6 .
+```
+
+Apply Terraform:
+
+```bash
+cd terraform
+terraform init
+terraform apply \
+  -var="project_id=YOUR_PROJECT" \
+  -var="location=us-central1" \
+  -var="container_image=REGION-docker.pkg.dev/YOUR_PROJECT/covid-data/covid-pipeline:phase-6"
+```
+
+If a runtime secret is required, add its first version outside Terraform:
+
+```bash
+echo -n 'REPLACE_WITH_SECRET' | gcloud secrets versions add covid-pipeline-runtime \
+  --data-file=- \
+  --project="$PROJECT_ID"
+```
+
+See `PHASE-6-CHANGES.md` and `architecture/phase-6-security.md` for the complete change inventory and verification steps.
+
 ## Tests
 
 ```bash
