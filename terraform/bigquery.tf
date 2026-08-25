@@ -15,7 +15,7 @@ resource "google_bigquery_dataset_iam_member" "covid_raw_data_editor" {
   project    = var.project_id
   dataset_id = google_bigquery_dataset.covid_raw.dataset_id
   role       = "roles/bigquery.dataEditor"
-  member     = "serviceAccount:${google_service_account.covid_data_processor.email}"
+  member     = "serviceAccount:${var.cloud_run_service_account}"
 }
 
 resource "google_bigquery_dataset" "covid_curated" {
