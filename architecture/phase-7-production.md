@@ -19,7 +19,7 @@ Set GitHub environment variables `GCP_PROJECT`, `REGION`, and `NOTIFICATION_EMAI
 For manual deployment:
 
 ```bash
-PROJECT_ID=your-project REGION=us-central1 ./scripts/deploy.sh
+PROJECT_ID=your-project REGION=us-central1 ./scripts/deploy.sh dev|prod
 ```
 
 The deployment script builds `:phase-7`, applies Terraform and passes the release version into Cloud Run.
