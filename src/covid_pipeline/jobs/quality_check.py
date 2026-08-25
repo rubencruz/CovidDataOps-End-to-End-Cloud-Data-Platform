@@ -25,7 +25,6 @@ SELECT
 FROM `{project}.{dataset}.{table}`
 """
 
-
 def run_quality_check(
     project: str | None = None,
     dataset: str = BQ_DATASET,
@@ -33,15 +32,24 @@ def run_quality_check(
 ) -> dict[str, Any]:
     """Run deterministic quality checks and raise RuntimeError on failure."""
     project = project or PROJECT_ID
+
     client = bigquery.Client(project=project)
-    query = QUALITY_QUERY.format(project=project, dataset=dataset, table=table)
+
+    query = QUALITY_QUERY.format(
+        project=project,
+        dataset=dataset,
+        table=table,
+    )
+
     row = next(iter(client.query(query).result()))
 
     result = {
         "total_rows": int(row.total_rows),
         "invalid_required_rows": int(row.invalid_required_rows),
         "negative_metric_rows": int(row.negative_metric_rows),
-        "missing_ingestion_timestamp_rows": int(row.missing_ingestion_timestamp_rows),
+        "missing_ingestion_timestamp_rows": int(
+            row.missing_ingestion_timestamp_rows
+        ),
     }
 
     passed = (
@@ -50,13 +58,22 @@ def run_quality_check(
         and result["negative_metric_rows"] == 0
         and result["missing_ingestion_timestamp_rows"] == 0
     )
+
     result["status"] = "passed" if passed else "failed"
 
     LOGGER.info("Quality check result: %s", result)
-    # Mude a linha do 'if not passed:' para ignorar se for apenas falta de dados
+
     if not passed:
         if result["total_rows"] == 0:
-            LOGGER.warning("Nenhum dado encontrado para processar hoje. Finalizando com sucesso.")
-            result["status"] = "passed"  # Força o status para sucesso
+            LOGGER.warning(
+                "Nenhum dado encontrado para processar hoje. "
+                "Finalizando com sucesso."
+            )
+            result["status"] = "passed"
             return result
-        raise RuntimeError(f"Data quality checks failed: {result}")
+
+        raise RuntimeError(
+            f"Data quality checks failed: {result}"
+        )
+
+    return result
