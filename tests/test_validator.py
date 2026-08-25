@@ -22,8 +22,8 @@ def test_missing_required_column():
     with pytest.raises(ValidationError):
         validate(valid_dataframe().drop(columns=["municipio"]))
 
-def test_negative_cases_are_rejected():
+def test_negative_cumulative_cases_are_rejected():
     df = valid_dataframe()
-    df.loc[0, "casosNovos"] = "-1"
+    df.loc[0, "casosAcumulado"] = "-1"
     with pytest.raises(ValidationError):
         validate(df)
