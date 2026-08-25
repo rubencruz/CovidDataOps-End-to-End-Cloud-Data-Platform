@@ -79,3 +79,4 @@ def run_reconciliation(
             result["status"] = "passed"  # Força o status para sucesso
             return result
         raise RuntimeError(f"Reconciliation checks failed: {result}")
+    return result
