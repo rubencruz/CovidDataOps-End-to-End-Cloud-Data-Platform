@@ -33,6 +33,8 @@ def test_quality_check_passes(monkeypatch):
 
     LOGGER.info("Quality check result: %s", result)
 
+    passed = result["status"] == "passed"
+
     if not passed:
         if result["total_rows"] == 0:
             LOGGER.warning(
