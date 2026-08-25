@@ -1,4 +1,4 @@
-name: Deploy production
+name: Deploy development
 
 on:
   workflow_dispatch:
@@ -15,7 +15,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
 
-    environment: production
+    environment: development
 
     steps:
       - name: Checkout
