@@ -156,7 +156,7 @@ resource "google_monitoring_dashboard" "pipeline" {
             dataSets = [{
               timeSeriesQuery = {
                 timeSeriesFilter = {
-                  filter = "metric.type=\"run.googleapis.com/request_count\" resource.type=\"cloud_run_revision\" resource.label.service_name=\"${var.cloud_run_service_name}\""
+                  filter      = "metric.type=\"run.googleapis.com/request_count\" resource.type=\"cloud_run_revision\" resource.label.service_name=\"${var.cloud_run_service_name}\""
                   aggregation = { alignmentPeriod = "60s", perSeriesAligner = "ALIGN_RATE", crossSeriesReducer = "REDUCE_SUM" }
                 }
               }
@@ -169,7 +169,7 @@ resource "google_monitoring_dashboard" "pipeline" {
             dataSets = [{
               timeSeriesQuery = {
                 timeSeriesFilter = {
-                  filter = "metric.type=\"run.googleapis.com/request_latencies\" resource.type=\"cloud_run_revision\" resource.label.service_name=\"${var.cloud_run_service_name}\""
+                  filter      = "metric.type=\"run.googleapis.com/request_latencies\" resource.type=\"cloud_run_revision\" resource.label.service_name=\"${var.cloud_run_service_name}\""
                   aggregation = { alignmentPeriod = "60s", perSeriesAligner = "ALIGN_PERCENTILE_99", crossSeriesReducer = "REDUCE_MAX" }
                 }
               }
@@ -182,7 +182,7 @@ resource "google_monitoring_dashboard" "pipeline" {
             dataSets = [{
               timeSeriesQuery = {
                 timeSeriesFilter = {
-                  filter = "metric.type=\"logging.googleapis.com/user/covid_pipeline_errors\" resource.type=\"cloud_run_revision\""
+                  filter      = "metric.type=\"logging.googleapis.com/user/covid_pipeline_errors\" resource.type=\"cloud_run_revision\""
                   aggregation = { alignmentPeriod = "60s", perSeriesAligner = "ALIGN_RATE" }
                 }
               }
@@ -195,7 +195,7 @@ resource "google_monitoring_dashboard" "pipeline" {
             dataSets = [{
               timeSeriesQuery = {
                 timeSeriesFilter = {
-                  filter = "metric.type=\"logging.googleapis.com/user/covid_pipeline_data_quality_failures\" resource.type=\"cloud_run_revision\""
+                  filter      = "metric.type=\"logging.googleapis.com/user/covid_pipeline_data_quality_failures\" resource.type=\"cloud_run_revision\""
                   aggregation = { alignmentPeriod = "300s", perSeriesAligner = "ALIGN_SUM" }
                 }
               }

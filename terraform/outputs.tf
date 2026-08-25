@@ -81,8 +81,8 @@ output "monitoring_dashboard_id" {
 output "monitoring_alert_policies" {
   description = "Production alert policy IDs."
   value = {
-    cloud_run_5xx       = google_monitoring_alert_policy.cloud_run_5xx.id
-    application_errors  = google_monitoring_alert_policy.pipeline_error_logs.id
-    data_quality        = google_monitoring_alert_policy.data_quality.id
+    cloud_run_5xx      = google_monitoring_alert_policy.cloud_run_5xx.id
+    application_errors = google_monitoring_alert_policy.pipeline_error_logs.id
+    data_quality       = google_monitoring_alert_policy.data_quality.id
   }
 }
