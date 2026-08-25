@@ -14,17 +14,47 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     environment: production
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: google-github-actions/auth@v2
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
         with:
           workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_DEPLOYER_SERVICE_ACCOUNT }}
-      - uses: google-github-actions/setup-gcloud@v2
-      - run: gcloud builds submit --tag "${{ vars.REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT }}/covid-data/covid-pipeline:${{ inputs.image_tag }}" .
-      - uses: hashicorp/setup-terraform@v3
-      - run: terraform init
+
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configure Docker
+        run: gcloud auth configure-docker ${{ vars.REGION }}-docker.pkg.dev --quiet
+
+      - name: Build and push container image
+        run: |
+          gcloud builds submit \
+            --tag "${{ vars.REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT }}/covid-data/covid-pipeline:${{ inputs.image_tag }}" \
+            .
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.9.8"
+
+      - name: Terraform init
         working-directory: terraform
-      - run: terraform apply -auto-approve -var="project_id=${{ vars.GCP_PROJECT }}" -var="location=${{ vars.REGION }}" -var="container_image=${{ vars.REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT }}/covid-data/covid-pipeline:${{ inputs.image_tag }}" -var="app_version=${{ inputs.image_tag }}" -var="notification_email=${{ vars.NOTIFICATION_EMAIL }}"
+        run: terraform init
+
+      - name: Terraform apply
         working-directory: terraform
+        run: |
+          terraform apply \
+            -auto-approve \
+            -var="project_id=${{ vars.GCP_PROJECT }}" \
+            -var="location=${{ vars.REGION }}" \
+            -var="container_image=${{ vars.REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT }}/covid-data/covid-pipeline:${{ inputs.image_tag }}" \
+            -var="app_version=${{ inputs.image_tag }}" \
+            -var="notification_email=${{ vars.NOTIFICATION_EMAIL }}"
