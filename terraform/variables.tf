@@ -72,13 +72,13 @@ variable "enable_scheduler" {
 variable "quality_check_schedule" {
   description = "Cron schedule for the BigQuery data-quality check."
   type        = string
-  default     = "46 15 * * *"
+  default     = "45 16 * * *"
 }
 
 variable "reconciliation_schedule" {
   description = "Cron schedule for the reconciliation job."
   type        = string
-  default     = "46 15 * * *"
+  default     = "45 16 * * *"
 }
 
 variable "scheduler_time_zone" {
