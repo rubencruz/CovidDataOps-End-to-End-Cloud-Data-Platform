@@ -272,3 +272,26 @@ Manual execution can be triggered with:
 gcloud scheduler jobs run covid-quality-check --location=us-central1
 gcloud scheduler jobs run covid-reconciliation --location=us-central1
 ```
+
+## Phase 7 — Production Operations
+
+Phase 7 adds production observability and operational controls without changing the ingestion architecture:
+
+- Structured JSON Cloud Run logs with `request_id`, revision, release version, source object and duration.
+- Cloud Monitoring dashboard for request rate, p99 latency, application errors and data-quality failures.
+- Alert policies for Cloud Run 5xx responses, application error logs and failed quality/reconciliation jobs.
+- Cloud Scheduler retry policies remain enabled; event-driven failures return HTTP 500 so Eventarc/Pub/Sub can redeliver transient failures.
+- GitHub Actions CI validates tests and Terraform. Production deployment uses GitHub OIDC/Workload Identity Federation rather than static GCP credentials.
+- Production runbook: `runbooks/production.md`.
+
+### Phase 7 deployment
+
+```bash
+PROJECT_ID=your-project REGION=us-central1 NOTIFICATION_EMAIL=ops@example.com ./scripts/deploy.sh dev|prod
+```
+
+Or use `.github/workflows/deploy.yml` with the production GitHub environment configured for Workload Identity Federation.
+
+Set `notification_email` to receive Cloud Monitoring notifications. If it is empty, alert policies are still created but without an email notification channel.
+
+See `PHASE-7-CHANGES.md` and `architecture/phase-7-production.md` for the complete production design.

@@ -20,6 +20,20 @@ resource "google_project_iam_member" "processor_bigquery_job_user" {
   member  = "serviceAccount:${google_service_account.covid_processor.email}"
 }
 
+resource "google_bigquery_dataset_iam_member" "processor_raw_editor" {
+  project    = var.project_id
+  dataset_id = google_bigquery_dataset.covid_raw.dataset_id
+  role       = "roles/bigquery.dataEditor"
+  member     = "serviceAccount:${google_service_account.covid_processor.email}"
+}
+
+resource "google_bigquery_dataset_iam_member" "processor_curated_editor" {
+  project    = var.project_id
+  dataset_id = google_bigquery_dataset.covid_curated.dataset_id
+  role       = "roles/bigquery.dataEditor"
+  member     = "serviceAccount:${google_service_account.covid_processor.email}"
+}
+
 resource "google_bigquery_table_iam_member" "processor_table_editor" {
   project    = var.project_id
   dataset_id = google_bigquery_dataset.covid_raw.dataset_id

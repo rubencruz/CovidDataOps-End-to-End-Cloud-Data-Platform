@@ -72,3 +72,17 @@ output "security_ingress" {
   description = "Cloud Run ingress mode; authentication remains required by IAM."
   value       = google_cloud_run_v2_service.covid_pipeline.ingress
 }
+
+output "monitoring_dashboard_id" {
+  description = "Cloud Monitoring production dashboard ID."
+  value       = google_monitoring_dashboard.pipeline.id
+}
+
+output "monitoring_alert_policies" {
+  description = "Production alert policy IDs."
+  value = {
+    cloud_run_5xx       = google_monitoring_alert_policy.cloud_run_5xx.id
+    application_errors  = google_monitoring_alert_policy.pipeline_error_logs.id
+    data_quality        = google_monitoring_alert_policy.data_quality.id
+  }
+}

@@ -40,6 +40,14 @@ resource "google_cloud_run_v2_service" "covid_pipeline" {
         name  = "BQ_TABLE"
         value = var.table_id
       }
+      env {
+        name  = "APP_VERSION"
+        value = var.app_version
+      }
+      env {
+        name  = "LOG_LEVEL"
+        value = "INFO"
+      }
     }
   }
 

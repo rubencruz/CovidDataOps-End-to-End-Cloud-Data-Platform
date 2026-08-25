@@ -1,0 +1,30 @@
+name: Deploy production
+
+on:
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: "Release tag"
+        required: true
+        default: "phase-7"
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_DEPLOYER_SERVICE_ACCOUNT }}
+      - uses: google-github-actions/setup-gcloud@v2
+      - run: gcloud builds submit --tag "${{ vars.REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT }}/covid-data/covid-pipeline:${{ inputs.image_tag }}" .
+      - uses: hashicorp/setup-terraform@v3
+      - run: terraform init
+        working-directory: terraform
+      - run: terraform apply -auto-approve -var="project_id=${{ vars.GCP_PROJECT }}" -var="location=${{ vars.REGION }}" -var="container_image=${{ vars.REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT }}/covid-data/covid-pipeline:${{ inputs.image_tag }}" -var="app_version=${{ inputs.image_tag }}" -var="notification_email=${{ vars.NOTIFICATION_EMAIL }}"
+        working-directory: terraform

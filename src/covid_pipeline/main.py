@@ -65,8 +65,7 @@ def run(
     project: str | None = None,
     dataset: str = BQ_DATASET,
     table: str = BQ_TABLE,
-    write_disposition: str = "WRITE_APPEND",
-) -> int:
+    write_disposition: str = "WRITE_APPEND",) -> int:
     """Run the complete ingestion pipeline and return the number of rows loaded."""
     if bucket:
         LOGGER.info("Reading gs://%s/%s", bucket, source)
@@ -77,7 +76,7 @@ def run(
         LOGGER.info("Reading local file %s", source_path)
 
     df = read_csv(source, bucket_name=bucket)
-    LOGGER.info("Read %d rows and %d columns", len(df), len(df.columns))
+    LOGGER.info("Read input", extra={"source_object": source, "rows_loaded": len(df)})
 
     validate(df)
     transformed = transform(df)
@@ -95,10 +94,8 @@ def run(
         write_disposition=write_disposition,
     )
     LOGGER.info(
-        "Loaded %d rows into %s.%s",
-        len(enriched),
-        dataset,
-        table,
+        "Loaded data into BigQuery",
+        extra={"source_object": source, "rows_loaded": len(enriched)},
     )
     return len(enriched)
 

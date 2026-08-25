@@ -97,3 +97,27 @@ variable "secret_name" {
   type        = string
   default     = "covid-pipeline-runtime"
 }
+
+variable "notification_email" {
+  description = "Optional email address for production monitoring alerts."
+  type        = string
+  default     = "rubencruzh@gmail.com"
+}
+
+variable "cloud_run_5xx_threshold" {
+  description = "Cloud Run 5xx request rate threshold per second before alerting."
+  type        = number
+  default     = 0.01
+}
+
+variable "pipeline_error_threshold" {
+  description = "Application error log rate per second before alerting."
+  type        = number
+  default     = 0.01
+}
+
+variable "app_version" {
+  description = "Application/release identifier exposed in structured logs."
+  type        = string
+  default     = "phase-7"
+}

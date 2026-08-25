@@ -8,16 +8,19 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from flask import Flask, jsonify, request
+from flask import Flask, g, jsonify, request
 
 from covid_pipeline.events.pubsub_handler import handle_pubsub_event
 from covid_pipeline.ingestion.config import BUCKET_NAME
 from covid_pipeline.jobs.quality_check import run_quality_check
 from covid_pipeline.jobs.reconciliation import run_reconciliation
 from covid_pipeline.main import run
+from covid_pipeline.observability import configure_logging, register_request_logging
 
 LOGGER = logging.getLogger("coviddataops")
 app = Flask(__name__)
+configure_logging()
+register_request_logging(app)
 
 
 @app.get("/health")
@@ -44,7 +47,7 @@ def ingest():
             "rows_loaded": rows_loaded,
         }), 200
     except Exception:
-        LOGGER.exception("COVID-19 ingestion failed")
+        LOGGER.exception("COVID-19 ingestion failed", extra={"request_id": getattr(g, "request_id", None)})
         return jsonify({"status": "error", "message": "COVID-19 ingestion failed"}), 500
 
 

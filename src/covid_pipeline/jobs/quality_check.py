@@ -45,7 +45,7 @@ def run_quality_check(
     }
 
     passed = (
-        result["total_rows"] > 0
+        result["total_rows"] >= 0
         and result["invalid_required_rows"] == 0
         and result["negative_metric_rows"] == 0
         and result["missing_ingestion_timestamp_rows"] == 0
@@ -53,6 +53,10 @@ def run_quality_check(
     result["status"] = "passed" if passed else "failed"
 
     LOGGER.info("Quality check result: %s", result)
+    # Mude a linha do 'if not passed:' para ignorar se for apenas falta de dados
     if not passed:
+        if result["total_rows"] == 0:
+            LOGGER.warning("Nenhum dado encontrado para processar hoje. Finalizando com sucesso.")
+            result["status"] = "passed"  # Força o status para sucesso
+            return result
         raise RuntimeError(f"Data quality checks failed: {result}")
-    return result

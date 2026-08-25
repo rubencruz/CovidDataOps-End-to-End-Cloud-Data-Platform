@@ -27,43 +27,6 @@ fi
 
 IMAGE="${REGION}-docker.pkg.dev/${PROJECT_ID}/covid-data/covid-pipeline:phase-7"
 
-echo "=========================================="
-echo " CovidDataOps Deployment"
-echo "=========================================="
-echo "Environment : $ENVIRONMENT"
-echo "Project     : $PROJECT_ID"
-echo "Region      : $REGION"
-echo "Image       : $IMAGE"
-echo "Terraform   : $TF_STATE"
-echo "Variables   : $TF_VARS"
-echo "=========================================="
-
-echo
-echo "==> Configuring gcloud project..."
-gcloud config set project "$PROJECT_ID"
-
-echo
-echo "==> Checking Artifact Registry..."
-gcloud artifacts repositories describe covid-data \
-  --location="$REGION" \
-  --project="$PROJECT_ID" \
-  >/dev/null 2>&1 || \
-gcloud artifacts repositories create covid-data \
-  --repository-format=docker \
-  --location="$REGION" \
-  --project="$PROJECT_ID"
-
-echo
-echo "==> Building container..."
-gcloud builds submit \
-  --project="$PROJECT_ID" \
-  --tag "$IMAGE" \
-  .
-
-echo
-echo "==> Initializing Terraform..."
-cd terraform
-
 terraform init
 
 echo

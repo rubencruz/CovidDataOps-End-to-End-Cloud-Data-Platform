@@ -1,4 +1,5 @@
 pandas>=2.2,<3
+pandas-gbq>=0.26.1
 flask>=3.0,<4
 gunicorn>=22,<24
 pyarrow==21.0.0

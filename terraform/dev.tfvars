@@ -1,0 +1,5 @@
+project_id      = "gcp-project-506020"
+location        = "us-central1"
+environment     = "dev"
+bucket_name     = "backet_covid_gcp"
+container_image = "us-central1-docker.pkg.dev/gcp-project-506020/covid-data/covid-pipeline:phase-7"
